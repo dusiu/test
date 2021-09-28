@@ -1,0 +1,4 @@
+-- INSERT INTO `table` (`value1`, `value2`)
+-- SELECT 'value1', 'value2' FROM DUAL
+-- WHERE NOT EXISTS (SELECT * FROM `table`
+--                   WHERE `value1`='value1' AND `value2`='value2' LIMIT 1)
