@@ -2,12 +2,9 @@ package io.github.jacekszmidt.service;
 
 import io.github.jacekszmidt.model.User;
 import org.apache.commons.lang3.math.NumberUtils;
-import org.hibernate.validator.constraints.Length;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
 
-import javax.persistence.Column;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -33,16 +30,17 @@ public class UserService {
         LOGGER.info("Dodano nowego uzytkownika: {}", user);
         confirmData();
     }
+
     private User addNewUser() {
         LOGGER.info("Podaj imie klienta:");
         String name = SCANNER.nextLine();
         LOGGER.info("Podaj nazwisko klienta:");
-            String lastName = SCANNER.nextLine();
-            LOGGER.info("Podaj numer telefonu klienta:");
-            String phoneNumber = SCANNER.nextLine();
+        String lastName = SCANNER.nextLine();
+        LOGGER.info("Podaj numer telefonu klienta:");
+        String phoneNumber = SCANNER.nextLine();
 
-            return new User(name, lastName, phoneNumber);
-        }
+        return new User(name, lastName, phoneNumber);
+    }
 
     public void showUsers() {
         if (USERS.isEmpty()) {

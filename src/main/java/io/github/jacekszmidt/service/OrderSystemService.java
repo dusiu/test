@@ -10,6 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -17,6 +20,7 @@ import java.nio.file.StandardOpenOption;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderSystemService {
@@ -27,6 +31,7 @@ public class OrderSystemService {
     private static final LaptopService LAPTOP_SERVICE = new LaptopService();
     private static final ComputerOutputWriter COMPUTER_OUTPUT_WRITER = new ExcelComputerOutputWriter();
     private static final Queue<Pair<String, byte[]>> EXCEL_FILE_NAME_WITH_CONTENT_QUEUE = new LinkedList<>();
+    private final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
     @Autowired
     private ExcelRepository excelRepository;
 
@@ -75,11 +80,8 @@ public class OrderSystemService {
                         LOGGER.warn("Excel file queue is empty");
                     } else {
                         Pair<String, byte[]> excelFileNameWithContent = EXCEL_FILE_NAME_WITH_CONTENT_QUEUE.poll();
-                        ExcelEntity saved = excelRepository.save(new ExcelEntity(excelFileNameWithContent.getKey(), USER_SERVICE.getUser().getName(),
+                        saveExcelEntity(new ExcelEntity(excelFileNameWithContent.getKey(), USER_SERVICE.getUser().getName(),
                                 excelFileNameWithContent.getValue()));
-//                        ExcelEntity saved1 = excelRepository.save(new ExcelEntity(excelFileNameWithContent.getKey(), USER_SERVICE.getUser().getName(),
-//                                excelFileNameWithContent.getValue()));
-                        LOGGER.info("Saved excel file to db with id: {}", saved.getId());
                         break;
 //                        try (FileOutputStream file = new FileOutputStream(excelFileNameWithContent.getKey())) {
 //                            file.write(excelFileNameWithContent.getValue());
@@ -150,6 +152,16 @@ public class OrderSystemService {
                 "11: download excel file from database" + System.lineSeparator();
 
         LOGGER.info(mainMenu);
+    }
+
+    public void saveExcelEntity(ExcelEntity excelEntity) {
+        if (validator.validate(excelEntity).isEmpty()) {
+            LOGGER.info("Saved excel entity with id: {}", excelRepository.save(excelEntity).getId());
+        } else {
+            LOGGER.error("Excel Entity: {}, Validation exception: {}", excelEntity, validator.validate(excelEntity).stream()
+                    .map(ConstraintViolation::getMessage)
+                    .collect(Collectors.joining(", ")));
+        }
     }
 
 }

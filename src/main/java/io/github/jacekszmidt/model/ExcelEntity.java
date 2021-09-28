@@ -1,12 +1,8 @@
 package io.github.jacekszmidt.model;
 
-import io.github.jacekszmidt.service.UserService;
-import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 public class ExcelEntity {
@@ -14,6 +10,7 @@ public class ExcelEntity {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
     private String fileName;
+    @Size(min = 6, message = "size must be min 6 characters")
     private String userName;
     @Lob
     private byte[] file;
@@ -59,7 +56,6 @@ public class ExcelEntity {
     public void setId(Long id) {
         this.id = id;
     }
-
 
 
     @Override
